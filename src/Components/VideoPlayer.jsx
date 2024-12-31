@@ -1,5 +1,8 @@
 import { useRef, useState } from "react";
 import ReactPlayer from "react-player";
+import { Box, TextField, Button, Paper } from "@mui/material";
+import Grid from "@mui/material/Grid2";
+import CaptionTimeline from "./CaptionTimeline";
 
 const VideoPlayer = () => {
   const [videoUrl, setVideoUrl] = useState("");
@@ -18,7 +21,7 @@ const VideoPlayer = () => {
     if (!ReactPlayer.canPlay(url)) {
       setError("Invalid video URL. Please provide a valid video URL.");
     } else {
-      setError(""); // Clear any previous errors
+      setError(""); 
     }
   };
 
@@ -29,13 +32,13 @@ const VideoPlayer = () => {
     }
 
     if (parseFloat(timestamp) < 0) {
-        alert("Timestamp cannot be negative.");
-        return;
-      }
+      alert("Timestamp cannot be negative.");
+      return;
+    }
 
     setCaptions((prev) => [
       ...prev,
-      { text: captionText, timestamp: parseFloat(timestamp)},
+      { text: captionText, timestamp: parseFloat(timestamp) },
     ]);
     setCaptionText("");
     setTimestamp("");
@@ -55,117 +58,144 @@ const VideoPlayer = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>React Video Player</h2>
-
-      {/* Input Field for Video URL */}
-      <div>
-        <input
-          type="text"
-          placeholder="Enter video URL"
-          value={videoUrl}
-          onChange={handleUrlChange}
+    <>
+      <Box
+        style={{
+          display: "flex",
+          padding: "20px",
+          justifyContent: "space-between",
+        }}
+      >
+        <Box
+          component={Paper}
+          elevation={5}
           style={{
-            width: "60%",
-            padding: "10px",
-            marginBottom: "10px",
-            fontSize: "16px",
+            border: "0px solid red",
+            marginTop: "20px",
+            marginLeft:"25%",
+            padding: "15px",
+            width: "50%",
+            height:"68%"
           }}
-        />
-      </div>
-
-      {/* Display error if validation fails */}
-      {error && (
-        <div style={{ color: "red", marginTop: "10px", fontSize: "14px" }}>
-          {error}
-        </div>
-      )}
-
-      <div style={{ marginTop: "20px" }}>
-        {/* Input Field for Captions */}
-        <input
-          type="text"
-          placeholder="Enter caption"
-          value={captionText}
-          onChange={(e) => setCaptionText(e.target.value)}
-          style={{
-            width: "45%",
-            padding: "10px",
-            marginRight: "10px",
-            fontSize: "16px",
-          }}
-        />
-        {/* Input Field for TimeStamp */}
-        <input
-          type="number"
-          placeholder="Enter timestamp (in seconds)"
-          value={timestamp}
-          onChange={(e) => setTimestamp(e.target.value)}
-          style={{
-            width: "45%",
-            padding: "10px",
-            marginRight: "10px",
-            fontSize: "16px",
-          }}
-        />
-
-        <button
-          onClick={addCaption}
-          style={{ padding: "10px 20px", fontSize: "16px" }}
         >
-          Add Caption
-        </button>
-      </div>
+          <h2>Video Player with Real-Time Captions</h2>
+          <Grid container spacing={2} direction="column">
+            {/* Input Field for Video URL */}
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                type="text"
+                placeholder="Enter video URL"
+                value={videoUrl}
+                onChange={handleUrlChange}
+                style={{
+                  fontSize: "16px",
+                }}
+              />
+            </Grid>
 
-      {/* Video Player */}
-      {videoUrl && !error && (
-        <div style={{ marginTop: "20px" }}>
-          <ReactPlayer
-            ref={playerRef}
-            url={videoUrl}
-            controls
-            width="600px"
-            height="360px"
-            onProgress={handleProgress}
+            {/* Display error if validation fails */}
+            {error && (
+              <Grid size={{ xs: 12 }}>
+                <Box
+                  style={{ color: "red", marginTop: "10px", fontSize: "14px" }}
+                >
+                  {error}
+                </Box>
+              </Grid>
+            )}
+
+            {/* Input Field for Captions */}
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                type="text"
+                placeholder="Enter caption"
+                value={captionText}
+                onChange={(e) => setCaptionText(e.target.value)}
+                style={{
+                  fontSize: "16px",
+                }}
+              />
+            </Grid>
+
+            {/* Input Field for TimeStamp */}
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                type="number"
+                placeholder="Enter timestamp (in seconds)"
+                value={timestamp}
+                onChange={(e) => setTimestamp(e.target.value)}
+                style={{
+                  fontSize: "16px",
+                }}
+              />
+            </Grid>
+
+            {/* Button for Adding Captions */}
+            <Grid size={{ xs: 12 }}>
+              <Button
+                fullWidth
+                onClick={addCaption}
+                variant="outlined"
+                style={{
+                  padding: "10px 20px",
+                  fontSize: "18px",
+                  color: "black", 
+                  backgroundColor: "#0071c5",
+                }}
+              >
+                Add Caption
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Box>
+          <CaptionTimeline captionTimeline={captions} />
+        </Box>
+      </Box>
+
+      <Box>
+        {/* Caption visible */}
+        {currentCaption && (
+          <Box
             style={{
-              boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
-              borderRadius: "4px",
+              margin: "0 0 0 23%",
+              width: "50%",
+              textAlign: "center",
+              color: "white",
+              backgroundColor: "rgba(0, 0, 0, 0.7)",
+              padding: "10px",
+              fontSize: "20px",
             }}
-            onError={() => setError("Failed to load the video.")}
-          />
+          >
+            {currentCaption}
+          </Box>
+        )}
 
-          {currentCaption && (
-            <div
+        {/* Video Player */}
+        {videoUrl && !error && (
+          <Box>
+            <ReactPlayer
+              ref={playerRef}
+              url={videoUrl}
+              controls
+              width="600px"
+              height="360px"
+              onProgress={handleProgress}
               style={{
-                position: "absolute",
-                bottom: "50px",
-                left: "0",
-                right: "0",
-                textAlign: "center",
-                color: "white",
-                backgroundColor: "rgba(0, 0, 0, 0.7)",
-                padding: "5px",
-                fontSize: "16px",
+                boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+                borderRadius: "4px",
+                margin:"20px 0 0 28%"
               }}
-            >
-              {currentCaption}
-            </div>
-          )}
-        </div>
-      )}
-
-      <ul style={{ marginTop: "20px" }}>
-        {captions.map((caption, index) => {
-          return (
-            <>
-              <li key={index}>
-                {caption.text} - {caption.timestamp}s
-              </li>
-            </>
-          );
-        })}
-      </ul>
-    </div>
+              onError={() => setError("Failed to load the video.")}
+            />
+          </Box>
+        )}
+      </Box>
+    </>
   );
 };
 
